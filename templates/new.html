@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}VOC 등록{% endblock %}
+{% block content %}<a class="back" href="/vocs">VOC 목록</a>
+<div class="heading">
+  <div>
+    <h1>VOC 등록</h1>
+    <p class="sub">별표가 표시된 항목은 필수 입력 항목입니다.</p>
+  </div>
+</div>
+<form method="post" enctype="multipart/form-data" class="editform">{% csrf_token %}{{ form.non_field_errors }}
+  <section class="panel formsection">
+    <h2>접수 정보</h2>
+    <div class="formgrid">
+      <div class="field"><label for="membersearch">제기자 검색</label><input type="search" id="membersearch" placeholder="이름 또는 소속 검색" aria-controls="{{ form.reporter.id_for_label }}"></div>
+      {% include "_field.html" with field=form.reporter %}{% include "_field.html" with field=form.registered %}</div>
+  </section>
+  <section class="panel formsection">
+    <h2>요청 내용</h2>
+    <div class="stack">{% include "_field.html" with field=form.kind %}{% include "_field.html" with field=form.title %}{% include "_field.html" with field=form.body %}</div>
+  </section>
+  <section class="panel formsection">
+    <h2>관련 화면 및 설비</h2>
+    <div class="stack">
+      <fieldset class="equipment-set">
+        <legend>관련 설비</legend>
+        <small>설비를 선택하지 않으면 공통으로 등록됩니다.</small>
+        {{ form.equipment }}{{ form.equipment.errors }}
+      </fieldset>
+      {% include "_field.html" with field=form.screen %}</div>
+  </section>
+  <section class="panel formsection">
+    <h2>첨부파일 및 링크</h2>
+    <div class="stack">
+      <div class="pastebox" tabindex="0"><label for="{{ form.files.id_for_label }}">파일 선택 또는 스크린샷 붙여넣기</label>{{ form.files }}{{ form.files.errors }}<small>여러 파일을 선택하거나 이 영역에 스크린샷을 붙여넣으세요.</small><ul class="filelist" aria-live="polite"></ul></div>
+      {% include "_field.html" with field=form.links %}<small>웹 주소 또는 Windows 공유 경로를 한 줄에 하나씩 입력하세요.</small></div>
+  </section>
+  <div class="actions"><a class="button" href="/vocs">취소</a><button class="primary">VOC 등록</button></div>
+</form>
+{% endblock %}

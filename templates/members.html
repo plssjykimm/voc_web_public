@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}회원 관리{% endblock %}
+{% block content %}
+<div class="heading">
+  <div>
+    <h1>회원 관리</h1>
+    <p class="sub">회원의 역할을 변경하거나 계정을 비활성화할 수 있습니다.</p>
+  </div>
+</div>
+<section class="panel">
+  <div class="sectionhead">
+    <h2>회원 목록 <em>{{ members|length }}명</em></h2>
+  </div>
+  <div class="scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>계정명</th>
+          <th>이름</th>
+          <th>소속</th>
+          <th>사번</th>
+          <th>역할</th>
+          <th>관리</th></tr>
+      </thead>
+      <tbody>{% for m in members %}
+        <tr>
+          <td>{{ m.username }}</td>
+          <td>{{ m.name }}</td>
+          <td>{{ m.department }}</td>
+          <td>{{ m.employee_id }}</td>
+          <td>{% if m.role == 'master' %}마스터{% elif not m.is_active %}{% if m.role == "developer" %}개발자{% else %}제기자{% endif %} · 비활성{% else %}
+          <form class="inline" method="post">{% csrf_token %}<input type="hidden" name="member" value="{{ m.pk }}"><input type="hidden" name="action" value="role"><select name="role" aria-label="{{ m.name }} 역할"><option value="reporter" {% if m.role == 'reporter' %}selected{% endif %}>제기자</option><option value="developer" {% if m.role == 'developer' %}selected{% endif %}>개발자</option></select><button>변경</button></form>
+          {% endif %}</td>
+          <td>{% if m.role != 'master' and m.is_active %}<button type="button" class="dangertext" data-delete data-pk="{{ m.pk }}" data-username="{{ m.username }}" data-name="{{ m.name }}">회원 삭제</button>{% endif %}</td></tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="empty">등록된 회원이 없습니다.</td></tr>
+        {% endfor %}</tbody>
+    </table>
+  </div>
+</section>
+<dialog id="delete-dialog">
+  <form method="post" class="stack">{% csrf_token %}
+    <h2>회원을 삭제할까요?</h2>
+    <p><strong data-target></strong> 계정의 로그인이 차단됩니다. 기존 VOC 이력은 보존됩니다.</p>
+    <input type="hidden" name="member"><input type="hidden" name="action" value="delete"><input type="hidden" name="confirm_name"><input type="hidden" name="confirm_username">
+    <div class="actions"><button type="button" data-close>취소</button><button class="danger">회원 삭제</button></div>
+  </form>
+</dialog>
+{% endblock %}

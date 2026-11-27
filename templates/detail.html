@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}#{{ voc.pk }} {{ voc.title }}{% endblock %}
+{% block content %}<a class="back" href="/vocs{% if back_query %}?{{ back_query }}{% endif %}">VOC 목록으로</a>
+<div class="heading">
+  <div>
+    <div class="eyeline"><span>VOC #{{ voc.pk }}</span><span class="pill" data-status="{{ voc.status }}">{{ voc.status }}</span></div>
+    <h1>{{ voc.title }}</h1>
+    {% if current_reason %}
+    <p class="reason">{{ voc.status }} 사유 · {{ current_reason }}</p>
+    {% elif voc.status == '보류' or voc.status == '수용 불가' %}
+    <p class="reason">{{ voc.status }} 사유 · {{ history.0.reason }}</p>
+    {% endif %}</div>
+</div>
+<div class="detailgrid">
+  <div class="stack">
+    <section class="panel formsection">
+      <h2>등록 내용</h2>
+      <dl class="facts">
+        <div>
+          <dt>제기자</dt>
+          <dd>{{ voc.reporter.name }} · {{ voc.reporter.department }}</dd>
+        </div>
+        <div>
+          <dt>실제 등록자</dt>
+          <dd>{{ voc.creator.name }} · {{ voc.creator.department }}</dd>
+        </div>
+        <div>
+          <dt>등록일</dt>
+          <dd>{{ voc.registered|date:"Y.m.d" }}</dd>
+        </div>
+        <div>
+          <dt>유형</dt>
+          <dd>{{ voc.kind.name }}</dd>
+        </div>
+        <div>
+          <dt>관련 설비</dt>
+          <dd>{% for e in voc.equipment.all %}<span class="tag">{{ e.name }}</span>{% empty %}<span class="tag">공통</span>{% endfor %}</dd>
+        </div>
+        <div>
+          <dt>화면번호</dt>
+          <dd>{{ voc.screen|default:"—" }}</dd>
+        </div>
+      </dl>
+      <h3>상세 내용</h3>
+      <div class="bodytext">{{ voc.body|linebreaksbr }}</div>
+    </section>
+    <section class="panel formsection">
+      <h2>첨부파일 및 링크</h2>
+      {% for a in attachments %}
+      <div class="attachment">{% if a.kind == 'file' %}{% if a.previewable %}<img src="{% url 'attachment' a.pk %}?preview=1" alt="{{ a.name }}" loading="lazy">{% endif %}<a href="{% url 'attachment' a.pk %}">{{ a.name }}</a><small>{{ a.size|filesizeformat }}</small>{% elif a.kind == 'web' %}<a href="{{ a.address }}" target="_blank" rel="noopener noreferrer">{{ a.address }}</a>{% else %}<code>{{ a.address }}</code><button type="button" data-copy="{{ a.address }}">경로 복사</button>{% endif %}</div>
+      {% empty %}
+      <p class="muted">등록된 첨부가 없습니다.</p>
+      {% endfor %}</section>
+  </div>
+  <aside class="stack">{% if transitions %}
+    <section class="panel formsection">
+      <h2>상태 변경</h2>
+      <form class="stack" method="post" action="{% url 'transition' voc.pk %}{% if back_query %}?{{ back_query }}{% endif %}">{% csrf_token %}<input type="hidden" name="version" value="{{ voc.version }}"><label>다음 상태<select name="status" data-transition>{% for s in transitions %}<option value="{{ s }}">{% if s == '접수' %}처리 재개{% else %}{{ s }}{% endif %}</option>{% endfor %}</select></label><label data-reason>처리 사유<textarea name="reason" rows="3"></textarea></label><label data-completed>완료일<input name="completed" type="date" value="{{ today }}"></label><button class="primary">변경 저장</button></form>
+    </section>
+    {% endif %}
+    <section class="panel formsection">
+      <h2>처리 이력</h2>
+      <ol class="timeline">{% for h in history %}
+        <li><strong>{% if h.before %}{{ h.before }} → {% endif %}{{ h.after }}</strong>
+          <p>{{ h.actor.name }} · {{ h.created|date:"Y.m.d H:i" }}</p>
+          {% if h.reason %}
+          <div>{{ h.reason|linebreaksbr }}</div>
+          {% endif %}{% if h.completed %}
+          <p>완료일 {{ h.completed|date:"Y.m.d" }}</p>
+          {% endif %}</li>
+        {% endfor %}</ol>
+    </section>
+  </aside>
+</div>
+{% endblock %}

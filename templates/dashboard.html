@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}통합 현황{% endblock %}
+{% block content %}
+<div class="heading">
+  <div>
+    <h1>통합 현황</h1>
+    <p class="sub">등록일을 기준으로 VOC의 현재 처리 상태를 집계합니다.</p>
+  </div>
+</div>
+<form class="panel filters inline wrap" method="get">{% include "_dates.html" %}{% include "_equipment.html" %}<a class="textbutton" href="/dashboard">초기화</a><button>조회</button></form>
+<div class="metrics">{% for m in cards %}<a class="metric" href="{{ m.url }}"><span>{{ m.name }}</span><strong>{{ m.count }}</strong></a>{% endfor %}<a class="metric rate" href="{{ rate_url }}"><span>해결률</span><strong>{{ rate }}</strong></a></div>
+<section class="panel">
+  <div class="sectionhead"><h2>설비별 요청 건수</h2></div>
+  <div class="chartbody">
+    {% if equipment_rows %}
+      <div class="equipment-chart">
+        <div class="equipment-donut" style="background:conic-gradient({{ equipment_gradient }})">
+          <div><strong>{{ voc_total }}건</strong><span>전체 VOC</span></div>
+        </div>
+        <ol class="equipment-ranking">
+          {% for item in equipment_rows %}
+            <li><a href="{{ item.url }}">
+              <span class="equipment-swatch" style="background-color:{{ item.color }}" aria-hidden="true"></span>
+              <span>{{ item.name }}</span><strong>{{ item.count }}건</strong>
+            </a></li>
+          {% endfor %}
+        </ol>
+      </div>
+      <p class="sub">여러 설비를 선택한 요청은 해당 설비마다 1건으로 집계합니다.</p>
+    {% else %}
+      <p class="empty">선택한 조건에 해당하는 요청이 없습니다.</p>
+    {% endif %}
+  </div>
+</section>
+<section class="panel chart">
+  <div class="sectionhead">
+    <h2>유형별 처리 현황</h2>
+  </div>
+  <div class="chartbody">
+    <div class="legend">{% for s in statuses %}<span><i data-status="{{ s }}"></i>{{ s }}</span>{% endfor %}</div>
+    {% for r in rows %}
+    <div class="chartrow"><b>{{ r.name }}</b>
+      <div class="track">{% for seg in r.segments %}{% if seg.count %}<a data-status="{{ seg.status }}" style="width:{{ seg.width }}%" href="{{ seg.url }}" aria-label="{{ r.name }} {{ seg.status }} {{ seg.count }}건" title="{{ seg.status }} {{ seg.count }}건">{{ seg.count }}</a>{% endif %}{% endfor %}</div>
+      <span>{{ r.total }}건</span></div>
+    {% empty %}
+    <p class="empty">집계할 유형이 없습니다.</p>
+    {% endfor %}</div>
+</section>
+{% endblock %}

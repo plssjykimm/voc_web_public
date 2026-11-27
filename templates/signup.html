@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}회원가입{% endblock %}
+{% block mainclass %}auth{% endblock %}
+{% block content %}
+<section class="auth-card">
+  <h1>회원가입</h1>
+  <p class="sub">입력한 사번이 로그인 비밀번호로 설정됩니다.</p>
+  <form method="post" class="stack">{% csrf_token %}
+    <div><label for="username">계정명</label>
+      <div class="inline"><input id="username" name="username" value="{{ request.POST.username }}" autocomplete="username" required><button type="button" data-check>중복 확인</button></div>
+      <small id="available" aria-live="polite"></small></div>
+    <label>이름<input name="name" value="{{ request.POST.name }}" required autocomplete="name"></label><label>소속<input name="department" value="{{ request.POST.department }}" required autocomplete="organization"></label><label>사번<input name="employee_id" value="{{ request.POST.employee_id }}" required></label><button class="primary">가입하기</button></form>
+  <p class="auth-link"><a href="/login">로그인으로 돌아가기</a></p>
+</section>
+{% endblock %}

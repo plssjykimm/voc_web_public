@@ -1,0 +1,9 @@
+[Unit]
+Description=Back up VOC database and attachments to external storage
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/voc/backup.env
+ExecStart=/bin/bash /opt/voc/deploy/backup.sh
+TimeoutStartSec=infinity
+UMask=0077

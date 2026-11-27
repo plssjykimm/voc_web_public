@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}설비 관리 권한{% endblock %}
+{% block mainclass %}auth{% endblock %}
+{% block content %}
+<section class="auth-card">
+  <h1>마스터 권한이 필요합니다</h1>
+  <p class="sub">현재 계정은 <strong>{{ user.username }}</strong>입니다. 설비를 추가하려면 마스터 계정으로 로그인하세요.</p>
+  <form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button class="primary">로그아웃하고 계정 전환</button>
+  </form>
+  <p class="auth-link"><a href="{% url 'vocs' %}">VOC 목록으로 돌아가기</a></p>
+</section>
+{% endblock %}

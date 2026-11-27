@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}VOC 목록{% endblock %}
+{% block content %}
+<div class="heading">
+  <div>
+    <h1>VOC 목록</h1>
+    <p class="sub">등록된 요청과 처리 상태를 확인하세요.</p>
+  </div>
+  <a class="button primary" href="/vocs/new"><b aria-hidden="true">＋</b> VOC 등록</a></div>
+<form class="panel filters" method="get">
+  <div class="filtergrid"><label class="wide">검색<input type="search" placeholder="번호, 제목 또는 화면번호" name="q" value="{{ request.GET.q }}"></label><label>상태<select name="status"><option value="">전체 상태</option>{% for s in statuses %}<option {% if request.GET.status == s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></label><label>유형<select name="kind"><option value="">전체 유형</option>{% for t in kinds %}<option value="{{ t.pk }}" {% if request.GET.kind == t.pk|stringformat:"s" %}selected{% endif %}>{{ t.name }}</option>{% endfor %}</select></label>{% include "_equipment.html" %}</div>
+  <div class="filterfoot">
+    <div class="dates">{% include "_dates.html" %}</div>
+    <label class="check"><input type="checkbox" name="mine" value="1" {% if request.GET.mine %}checked{% endif %}>내가 제기한 건</label><a class="textbutton" href="/vocs">초기화</a><button>조회</button></div>
+</form>
+<section class="panel">
+  <div class="sectionhead">
+    <h2>조회 결과 <em>{{ page.paginator.count }}건</em></h2>
+  </div>
+  <div class="scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>번호</th>
+          <th>상태</th>
+          <th>유형</th>
+          <th>제목</th>
+          <th>관련 설비</th>
+          <th>화면번호</th>
+          <th>제기자</th>
+          <th>등록일</th></tr>
+      </thead>
+      <tbody>{% for v in page %}
+        <tr>
+          <td class="muted">#{{ v.pk }}</td>
+          <td><span class="pill" data-status="{{ v.status }}">{{ v.status }}</span></td>
+          <td>{{ v.kind.name }}</td>
+          <td class="subject"><a href="/vocs/{{ v.pk }}?{{ back_query }}">{{ v.title }}</a></td>
+          <td>{% for e in v.equipment.all %}{{ e.name }}{% if not forloop.last %}, {% endif %}{% empty %}공통{% endfor %}</td>
+          <td>{{ v.screen|default:"—" }}</td>
+          <td>{{ v.reporter.name }}</td>
+          <td>{{ v.registered|date:"Y.m.d" }}</td></tr>
+        {% empty %}
+        <tr>
+          <td colspan="8" class="empty">조회된 VOC가 없습니다.</td></tr>
+        {% endfor %}</tbody>
+    </table>
+  </div>
+  {% if page.has_other_pages %}
+  <div class="pager">{% if page.has_previous %}<a href="?{{ query }}&amp;page={{ page.previous_page_number }}">이전</a>{% endif %}<span>{{ page.number }} / {{ page.paginator.num_pages }}</span>{% if page.has_next %}<a href="?{{ query }}&amp;page={{ page.next_page_number }}">다음</a>{% endif %}</div>
+  {% endif %}</section>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}설비 관리{% endblock %}
+{% block content %}
+<div class="heading"><h1>설비 관리</h1></div>
+<section class="panel formsection">
+  <h2>설비 추가</h2>
+  <form method="post" class="stack">
+    {% csrf_token %}
+    <div class="field">
+      {{ form.name.label_tag }}
+      {{ form.name }}
+      {{ form.name.errors }}
+    </div>
+    <div><button class="primary">추가</button></div>
+  </form>
+</section>
+<section class="panel">
+  <div class="sectionhead"><h2>등록된 설비 <em>{{ items|length }}개</em></h2></div>
+  <div class="scroll">
+    <table>
+      <thead><tr><th scope="col">설비명</th><th scope="col">상태</th></tr></thead>
+      <tbody>
+        {% for item in items %}
+          <tr><td>{{ item.name }}</td><td>{% if item.active %}사용 중{% else %}사용 종료{% endif %}</td></tr>
+        {% empty %}
+          <tr><td colspan="2" class="empty">등록된 설비가 없습니다.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

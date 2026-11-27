@@ -1,0 +1,10 @@
+[Unit]
+Description=Start VOC on Podman machine boot
+
+[Timer]
+OnStartupSec=10s
+AccuracySec=1s
+Unit=voc-startup.service
+
+[Install]
+WantedBy=timers.target

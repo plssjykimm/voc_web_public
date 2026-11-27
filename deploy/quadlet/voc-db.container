@@ -1,0 +1,15 @@
+[Container]
+CgroupsMode=enabled
+Image=docker.io/library/postgres:16-alpine
+Pull=never
+ContainerName=voc-db
+Network=voc.network
+EnvironmentFile=/etc/g2r2-voc/db.env
+Volume=voc-db-data.volume:/var/lib/postgresql/data
+
+[Service]
+Delegate=yes
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

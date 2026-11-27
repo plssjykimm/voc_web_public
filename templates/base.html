@@ -1,0 +1,29 @@
+{% load static %}<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{% block title %}VOC 관리{% endblock %} · VOC 관리실</title><link rel="stylesheet" href="{% static 'workspace.css' %}?v=2"><script defer src="{% static 'workspace.js' %}?v=2"></script></head>
+<body><a class="skip" href="#main">본문으로 건너뛰기</a>
+<header>
+  <div class="header-inner"><a class="brand" href="{% if user.role == 'master' %}/members{% elif user.is_authenticated %}/vocs{% else %}/login{% endif %}"><span class="brandmark" aria-hidden="true"><i></i><i></i><i></i></span>VOC 관리실</a>
+    {% if user.is_authenticated %}
+    <nav aria-label="주 메뉴">
+      {% if user.role == 'master' %}
+        <a {% if request.resolver_match.url_name == 'members' %}aria-current="page"{% endif %} href="{% url 'members' %}">회원 관리</a>
+        <a {% if request.resolver_match.url_name == 'equipment' %}aria-current="page"{% endif %} href="{% url 'equipment' %}">설비 관리</a>
+      {% else %}
+        <a {% if '/vocs' in request.path %}aria-current="page"{% endif %} href="/vocs">VOC 목록</a>
+        <a {% if request.path == '/dashboard' %}aria-current="page"{% endif %} href="/dashboard">통합 현황</a>
+      {% endif %}
+    </nav>
+    <div class="account"><span>{{ user.name|default:user.username }}</span>
+      <form method="post" action="/logout">{% csrf_token %}<button class="textbutton">로그아웃</button></form>
+    </div>
+    {% endif %}</div>
+</header>
+<main id="main" class="{% block mainclass %}
+  {% endblock %}">{% for message in messages %}
+  <p class="notice" role="status">{{ message }}</p>
+  {% endfor %}{% if error %}
+  <p class="error" role="alert">{{ error }}</p>
+  {% endif %}
+  {% block content %}
+  {% endblock %}</main>
+</body></html>

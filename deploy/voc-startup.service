@@ -1,0 +1,9 @@
+[Unit]
+Description=Load VOC Quadlets after the Podman machine starts
+After=network-online.target podman.socket
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl daemon-reload
+ExecStart=/usr/bin/systemctl start voc-app.service voc-nginx.service

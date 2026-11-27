@@ -1,0 +1,9 @@
+<label>관련 설비
+  <select name="equipment">
+    <option value="">전체 설비</option>
+    <option value="common" {% if request.GET.equipment == "common" %}selected{% endif %}>공통</option>
+    {% for e in equipment %}
+      <option value="{{ e.pk }}" {% if request.GET.equipment == e.pk|stringformat:"s" %}selected{% endif %}>{{ e.name }}</option>
+    {% endfor %}
+  </select>
+</label>

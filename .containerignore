@@ -1,0 +1,15 @@
+*
+!requirements.txt
+!manage.py
+!voc/
+!voc/**
+!config/
+!config/**
+!templates/
+!templates/**
+!static/
+!static/**
+!deploy/
+!deploy/entrypoint.sh
+!deploy/nginx.conf
+**/__pycache__

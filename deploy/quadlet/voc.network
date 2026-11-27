@@ -1,0 +1,4 @@
+[Network]
+NetworkName=voc
+Subnet=10.89.82.0/24
+Gateway=10.89.82.1
